@@ -1,40 +1,40 @@
-// NUSA RING RUN — main.ts (Node 22, standard library only).
-// Entrypoint program/v1: menyalin game/ dan screenshots/ dari samping file
-// ini ke /output lalu menulis /output/dossier.json dengan buildDossier dari
-// vendor/makefun-game.ts (salinan kit, tidak diubah). Di luar grader,
-// MAKEFUN_OUTPUT_DIR menggantikan /output:
-//   mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
-// Deterministik: hanya menyalin file + membangun dossier dari input yang
-// sama, tanpa tanggal, tanpa acak — dua run menulis byte yang sama.
+// NUSA RING RUN v2 — entrypoint program/v1 (Node 22, hanya stdlib).
+// Tugas file ini sempit: salin game/ + screenshots/ dari sebelah file ini
+// ke direktori output, lalu tulis dossier.json dari buildDossier di
+// vendor/makefun-game.ts (salinan kit yang tidak diubah). Di luar grader,
+// direktori output diganti lewat MAKEFUN_OUTPUT_DIR:
+//   MAKEFUN_OUTPUT_DIR=out node main.ts
+// Output harus sama persis bila dijalankan dua kali dari input yang sama:
+// tidak ada jam, tidak ada acak, tidak ada apa pun yang berubah antar run.
 
 import { chmodSync, cpSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildDossier } from './vendor/makefun-game.ts';
 
-const here = fileURLToPath(new URL('.', import.meta.url));
-const out = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
+const rootDir = fileURLToPath(new URL('.', import.meta.url));
+const outDir = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
+const dossierLimits = {
+  text_max_bytes: 163840,
+  screenshots: { max: 4, max_bytes: 262144 },
+  game_max_files: 993,
+  game_max_bytes: 50331648,
+  game_path_max_bytes: 1000,
+};
 
-mkdirSync(out, { recursive: true });
-cpSync(join(here, 'game'), join(out, 'game'), { recursive: true });
-mkdirSync(join(out, 'screenshots'), { recursive: true });
-if (existsSync(join(here, 'screenshots'))) {
-  cpSync(join(here, 'screenshots'), join(out, 'screenshots'), { recursive: true });
+mkdirSync(outDir, { recursive: true });
+cpSync(join(rootDir, 'game'), join(outDir, 'game'), { recursive: true });
+const shotDir = join(outDir, 'screenshots');
+mkdirSync(shotDir, { recursive: true });
+if (existsSync(join(rootDir, 'screenshots'))) {
+  cpSync(join(rootDir, 'screenshots'), shotDir, { recursive: true });
 }
 
-// Batas gate (reference/gate.json): dossier teks max 160 KiB, max 4
-// screenshot @ 256 KiB, game/ max 993 file / 48 MiB / path 1000 byte.
-const dossierPath = join(out, 'dossier.json');
-writeFileSync(
-  dossierPath,
-  buildDossier(out, {
-    text_max_bytes: 163840,
-    screenshots: { max: 4, max_bytes: 262144 },
-    game_max_files: 993,
-    game_max_bytes: 50331648,
-    game_path_max_bytes: 1000,
-  }),
-);
-chmodSync(dossierPath, 0o644);
-// Catatan determinisme: tidak ada tanggal/acak di jalur ini — dua run dari
-// input yang sama menulis byte yang sama (gate menjalankan main.ts 2x).
+// Dossier ditulis dari isi output yang baru disalin, lalu dikunci modenya
+// supaya grader membaca file yang sama persis di kedua run.
+// v2: tidak ada perubahan perilaku di sini — yang berubah adalah isi
+// game/ (HUD chase lebih padat, strip gauge, checklist, burung) dan
+// screenshots/ yang di-stage ulang; entrypoint ini hanya menyalinnya.
+const dossierFile = join(outDir, 'dossier.json');
+writeFileSync(dossierFile, buildDossier(outDir, dossierLimits));
+chmodSync(dossierFile, 0o644);
