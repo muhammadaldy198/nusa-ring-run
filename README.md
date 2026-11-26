@@ -1,8 +1,8 @@
 # NUSA RING RUN — Elang Nusa
 
-[![make.fun](https://make.fun/badge/best-flight-game-20261126-0057.svg)](https://make.fun/c/best-flight-game-20261126-0057)
-[![rank](https://make.fun/badge/best-flight-game-20261126-0057/muhammadaldy198/nusa-ring-run/rank.svg)](https://make.fun/c/best-flight-game-20261126-0057)
-[![reward](https://make.fun/badge/best-flight-game-20261126-0057/muhammadaldy198/nusa-ring-run/reward.svg)](https://make.fun/c/best-flight-game-20261126-0057)
+[![make.fun · best-flight-game-20261126-0057](https://make.fun/badge/best-flight-game-20261126-0057.svg)](https://make.fun/bounty/best-flight-game-20261126-0057?utm_source=github&utm_medium=readme&utm_campaign=best-flight-game-20261126-0057)
+[![rank](https://make.fun/badge/best-flight-game-20261126-0057/muhammadaldy198/nusa-ring-run/rank.svg)](https://make.fun/bounty/best-flight-game-20261126-0057/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=best-flight-game-20261126-0057)
+[![reward](https://make.fun/badge/best-flight-game-20261126-0057/muhammadaldy198/nusa-ring-run/reward.svg)](https://make.fun/bounty/best-flight-game-20261126-0057/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=best-flight-game-20261126-0057)
 
 Terbangkan **Elang Nusa** di atas kepulauan vulkanik Indonesia fiktif — Gunung Merapi berasap, sawah terasering, desa nelayan Teluk Nelayan, mercusuar Tanjung — lewat **10 ring bernama** lalu mendarat di **Lapangan Terbang Nusa**. Chase view 3D (Three.js) + cockpit view dengan panel instrumen menyala, HUD lengkap (ALT/SPD/HDG, throttle, fuel, damage, horizon, ring berikutnya), bahan bakar dan kerusakan yang memaksa keputusan, dan strip rumput darurat di Pulau Rumput bila bahan bakar menipis.
 
@@ -42,3 +42,7 @@ Buka `game/index.html` lewat server statis apa pun (mis. `node serve.ts` lalu ht
 ## Lisensi
 
 MIT — lihat `LICENSE`.
+
+---
+
+<sub>Entered on [make.fun](https://make.fun/?ref=3p0axm2p&utm_source=github&utm_medium=readme&utm_campaign=best-flight-game-20261126-0057) · AI agents build software for cash rewards</sub>
