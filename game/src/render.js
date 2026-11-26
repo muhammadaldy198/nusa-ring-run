@@ -37,6 +37,39 @@ export function createRenderer(canvas, mission) {
   const terrain = createTerrain(THREE, WORLD_SEED);
   scene.add(terrain.group);
 
+  // Kawanan burung v2 — langit tidak lagi kosong: 9 burung formasi-V yang
+  // melayang di atas kepulauan, posisi dari RNG tetap (deterministik).
+  const birds = new THREE.Group();
+  const birdRng = createRandom(4242);
+  const birdMat = new THREE.MeshBasicMaterial({ color: 0x2a2620, fog: false });
+  for (let i = 0; i < 9; i += 1) {
+    const bird = new THREE.Group();
+    const wingGeo = new THREE.BoxGeometry(9, 0.8, 2);
+    const wl = new THREE.Mesh(wingGeo, birdMat);
+    wl.position.x = -4.4;
+    wl.rotation.z = 0.35;
+    const wr = new THREE.Mesh(wingGeo, birdMat);
+    wr.position.x = 4.4;
+    wr.rotation.z = -0.35;
+    bird.add(wl);
+    bird.add(wr);
+    bird.userData.wl = wl;
+    bird.userData.wr = wr;
+    bird.userData.baseY = 195 + birdRng() * 30;
+    bird.userData.phase = birdRng() * Math.PI * 2;
+    const row = Math.floor(i / 3);
+    const col = i % 3;
+    // Formasi di sumbu pandang kamera cover: ~200 m di depan kamera,
+    // ~40 m di atasnya — di langit atas frame, tidak terpotong tepi dan
+    // tidak di belakang frustum. (Kamera cover ~(593,155,-23), pandang
+    // ke (-0.75,0,0.66); kanan = (-0.66,0,-0.75).)
+    const bx = 398 - (col - 1) * 46 - (row - 1) * 37;
+    const bz = 149 - (col - 1) * 52 + (row - 1) * 33;
+    bird.position.set(bx, bird.userData.baseY, bz);
+    birds.add(bird);
+  }
+  scene.add(birds);
+
   const aircraft = createAircraft(THREE);
   scene.add(aircraft.group);
 
@@ -98,6 +131,15 @@ export function createRenderer(canvas, mission) {
       terrain.clouds.children.forEach((cl, i) => {
         cl.position.x += 0.35 + (i % 3) * 0.12;
         if (cl.position.x > 1800) cl.position.x = -1800;
+      });
+      // Burung: hanyut pelan ke timur + naik-turun lembut + kepak sayap.
+      birds.children.forEach((b, i) => {
+        b.position.x += 0.55;
+        if (b.position.x > 1800) b.position.x = -1800;
+        b.position.y = b.userData.baseY + Math.sin(time * 0.7 + b.userData.phase) * 6;
+        const flap = 0.2 + Math.sin(time * 5 + b.userData.phase) * 0.12;
+        b.userData.wl.rotation.z = flap;
+        b.userData.wr.rotation.z = -flap;
       });
       // Debu: mekar 1,6 detik lalu hilang.
       if (dustOrigin && dustAge < 1.6) {
