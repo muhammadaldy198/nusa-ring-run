@@ -138,7 +138,7 @@ export function stageShot(name, game) {
     return 'cockpit';
   }
   if (name === 'ring') {
-    world._done = (w) => approaching(w, 5, 320);
+    world._done = (w) => approaching(w, 5, 260);
     simulate(world, renderCtx, (w) => {
       const [tx, ty, tz] = ringTarget(w);
       return autopilot(w, tx, ty, tz, 58);
@@ -147,8 +147,10 @@ export function stageShot(name, game) {
     settleCamera(rig, world);
     return 'chase';
   }
-  // cover (default): mendekati ring ke-4 setelah 3 ring lewat.
-  world._done = (w) => approaching(w, 3, 320);
+  // cover (default): mendekati ring ke-4 setelah 3 ring lewat. v2: berhenti
+  // di 200 m (bukan 320 m) supaya ring oranye BESAR di frame — cover v1
+  // kalah karena ringnya kecil dan langitnya kosong.
+  world._done = (w) => approaching(w, 3, 200);
   simulate(world, renderCtx, (w) => {
     const [tx, ty, tz] = ringTarget(w);
     return autopilot(w, tx, ty, tz, 56);
