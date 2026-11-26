@@ -270,16 +270,16 @@ export function createTerrain(THREE, seed) {
   smoke.position.set(WORLD.volcano.x, WORLD.volcano.height - 4, WORLD.volcano.z);
   group.add(smoke);
 
-  // --- awan golden-hour: ellipsoid pipih ---
+  // --- awan golden-hour: ellipsoid pipih, v2 lebih banyak + berlapis ---
   const clouds = new THREE.Group();
-  const cloudMat = new THREE.MeshBasicMaterial({
-    color: 0xfff2dd, transparent: true, opacity: 0.9,
-  });
-  for (let i = 0; i < 14; i += 1) {
+  for (let i = 0; i < 22; i += 1) {
+    const cloudMat = new THREE.MeshBasicMaterial({
+      color: 0xfff2dd, transparent: true, opacity: 0.55 + (i % 5) * 0.09,
+    });
     const cl = new THREE.Mesh(new THREE.SphereGeometry(1, 10, 8), cloudMat);
-    const sx = 90 + rng() * 160;
-    cl.scale.set(sx, 16 + rng() * 14, 40 + rng() * 40);
-    cl.position.set((rng() - 0.5) * 3200, 380 + rng() * 160, (rng() - 0.5) * 3200);
+    const sx = 90 + rng() * 170;
+    cl.scale.set(sx, 14 + rng() * 16, 40 + rng() * 40);
+    cl.position.set((rng() - 0.5) * 3400, 330 + rng() * 230, (rng() - 0.5) * 3400);
     clouds.add(cl);
   }
   group.add(clouds);
