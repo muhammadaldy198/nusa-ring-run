@@ -4,7 +4,7 @@
 // skor, timer, dan WIN/LOSE tertulis — semuanya dalam SATU frame cover.
 import { targetInfo } from './world.js';
 import { knots, feet } from './flight.js';
-import { drawCockpitPanel } from './cockpit.js';
+import { drawCockpitPanel, drawGaugeStrip } from './cockpit.js';
 
 function el(tag, id, parent, cls) {
   const d = document.createElement(tag);
@@ -102,11 +102,33 @@ export function createHud(container) {
   mapCanvas.style.display = 'none';
   root.appendChild(mapCanvas);
 
+  // Checklist misi v2 — 10 ring bernama, selalu terlihat di chase view
+  // (pola cover pemenang: misi tertulis di frame, bukan tersirat).
+  const checklist = el('div', '', root, 'panel checklist');
+  checklist.style.display = 'none';
+  const ckHead = el('div', '', checklist, 'ckhead');
+  ckHead.textContent = 'DAFTAR RING — 10 GERBANG';
+  const ckRows = [];
+  for (let i = 0; i < 10; i += 1) {
+    ckRows.push(el('div', '', checklist, 'ckrow todo'));
+  }
+  const ckFoot = el('div', '', checklist, 'ckfoot');
+  ckFoot.textContent = 'LEWATI SEMUA → MENDARAT DI NUSA';
+
+  // Strip instrumen bawah v2 — 6 jam + bilah status, hanya di chase view.
+  const stripWrap = el('div', '', root, 'strip');
+  stripWrap.style.display = 'none';
+  const stripCanvas = document.createElement('canvas');
+  stripCanvas.width = 1280;
+  stripCanvas.height = 112;
+  stripWrap.appendChild(stripCanvas);
+
   return {
     root, title, mission, goal, winlose, compass, target, score, rings,
     timer, combo, alt, spd, hdg, vsi, thr, fuel, dmg, lights, horizon,
     flash, msg, banner, result, resultTitle, resultBody, titleScreen,
-    tsMissions, cockpitPanel, cpCanvas, mapCanvas, sub,
+    tsMissions, cockpitPanel, cpCanvas, mapCanvas, sub, checklist, ckRows,
+    ckFoot, stripWrap, stripCanvas,
   };
 }
 
@@ -287,13 +309,33 @@ export function updateHud(hud, world, cameraMode, showMap) {
 
   hud.titleScreen.style.display = world.status === 'title' ? 'block' : 'none';
   const cockpitOn = cameraMode === 'cockpit' && world.status !== 'title';
+  const chaseOn = cameraMode === 'chase' && world.status !== 'title';
   hud.root.classList.toggle('cockpit-on', cockpitOn);
+  hud.root.classList.toggle('chase-on', chaseOn);
   hud.cockpitPanel.style.display = cockpitOn ? 'block' : 'none';
   if (cockpitOn) {
     drawCockpitPanel(hud.cpCanvas, world);
   }
-  hud.mapCanvas.style.display = showMap ? 'block' : 'none';
-  if (showMap) drawMinimap(hud.mapCanvas, world);
+  // v2: strip gauge + checklist + minimap SELALU tampil di chase view —
+  // cover v1 kalah padat justru karena ketiganya tersembunyi / tidak ada.
+  hud.stripWrap.style.display = chaseOn ? 'block' : 'none';
+  if (chaseOn) drawGaugeStrip(hud.stripCanvas, world);
+  hud.checklist.style.display = chaseOn ? 'block' : 'none';
+  if (chaseOn && world.rings) {
+    world.rings.forEach((r, i) => {
+      const row = hud.ckRows[i];
+      if (!row) return;
+      const mark = r.passed ? '✓' : i === world.nextRing ? '▶' : '·';
+      row.textContent = `${mark} ${i + 1}. ${r.name}`;
+      row.className = `ckrow ${r.passed ? 'done' : i === world.nextRing ? 'next' : 'todo'}`;
+    });
+    hud.ckFoot.textContent = world.nextRing >= 10
+      ? 'SEMUA RING LEWAT → MENDARAT DI NUSA'
+      : `BERIKUTNYA: ${world.rings[world.nextRing].name}`;
+  }
+  const mapOn = world.status !== 'title' && (chaseOn || showMap);
+  hud.mapCanvas.style.display = mapOn ? 'block' : 'none';
+  if (mapOn) drawMinimap(hud.mapCanvas, world);
 }
 
 /** Isi daftar misi di layar judul; `selected` = id misi aktif. */
