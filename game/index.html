@@ -58,8 +58,21 @@
   .tshelp { font-size: 12px; line-height: 1.7; color: #c8d6e2; margin-top: 14px; }
   .cockpit { position: absolute; bottom: 0; left: 0; width: 100%; height: 190px; background: #14181f; border-top: 3px solid #2a2f38; }
   .cockpit canvas { width: 100%; height: 100%; display: block; }
-  #minimap { position: absolute; top: 168px; right: 10px; border: 1px solid rgba(255, 210, 63, 0.4); border-radius: 6px; }
+  #minimap { position: absolute; top: 132px; right: 10px; border: 1px solid rgba(255, 210, 63, 0.4); border-radius: 6px; }
   #hud.cockpit-on .bl, #hud.cockpit-on .bc { display: none; }
+  /* v2 — kepadatan cover: checklist misi kiri, strip gauge bawah chase. */
+  .checklist { top: 168px; left: 10px; width: 302px; padding: 6px 10px; }
+  .ckhead { font-size: 12px; font-weight: bold; color: #ffd23f; letter-spacing: 1px; margin-bottom: 3px; }
+  .ckrow { font-size: 11px; line-height: 1.5; }
+  .ckrow.done { color: #2ecc40; }
+  .ckrow.next { color: #ff8c1a; font-weight: bold; }
+  .ckrow.todo { color: #8a94a3; }
+  .ckfoot { font-size: 10px; color: #9fc6e8; margin-top: 4px; }
+  .strip { position: absolute; bottom: 0; left: 0; width: 100%; height: 112px; background: #14181f; border-top: 3px solid #2a2f38; }
+  .strip canvas { width: 100%; height: 100%; display: block; }
+  /* Di chase view panel kiri-bawah + horizon naik di atas strip. */
+  #hud.chase-on .bl, #hud.chase-on .bc { bottom: 122px; }
+  #hud.cockpit-on .checklist, #hud.cockpit-on .strip { display: none; }
 </style>
 <script type="importmap">
 {
